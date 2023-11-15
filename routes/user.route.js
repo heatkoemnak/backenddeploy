@@ -55,4 +55,18 @@ router.post('/register', async (req, res) => {
   }
 });
 
+// delete user by id
+router.delete('/users/:id', async (req, res) => {
+  const { id } = req.params;
+  const user = await userModel.findByIdAndDelete(id);
+  console.log(user);
+  // try {
+  //   const user = await userModel.findByIdAndDelete(req.params.id);
+  //   if (user) return res.status(200).json({ message: 'User deleted' });
+  //   else return res.status(400).json({ message: 'User not found' });
+  // } catch (error) {
+  //   console.log(error);
+  // }
+});
+
 module.exports = router;
