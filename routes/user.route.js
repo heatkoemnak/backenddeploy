@@ -26,36 +26,33 @@ router.post('/register', async (req, res) => {
     const usernameExist = await userModel.findOne({ username });
     if (usernameExist)
       return res.status(400).send({ error: 'Username already exists' });
-    const user = new User({
+    const user = new userModel({
       username: username,
       password: hashedPassword,
     });
     await user.save();
-    if (user) {
-      jwt.sign(
-        { userId: user._id, username },
-        process.env.TOKEN_SECRET,
-        (err, token) => {
-          if (err) return res.status(400).json(err);
-          res
-            .cookie('token', token, {
-              sameSite: 'none',
-              secure: true,
-            })
-            .status(201)
-            .json({
-              user: user,
-            });
-        }
-      );
-    }
+    // if (user) {
+    //   jwt.sign(
+    //     { userId: user._id, username },
+    //     process.env.TOKEN_SECRET,
+    //     (err, token) => {
+    //       if (err) return res.status(400).json(err);
+    //       res
+    //         .cookie('token', token, {
+    //           sameSite: 'none',
+    //           secure: true,
+    //         })
+    //         .status(201)
+    //         .json({
+    //           user: user,
+    //         });
+    //     }
+    //   );
+    // }
     res.status(201).json({ user: user });
   } catch (err) {
     res.status(400).json(err);
   }
 });
-
-
-
 
 module.exports = router;
