@@ -55,14 +55,51 @@ router.post('/register', async (req, res) => {
   }
 });
 
+router.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password)
+    return res
+      .status(400)
+      .send({ error: 'You must provide a username and password' });
+  try {
+    const user = await userModel.findOne({ username });
+    if (!user) return res.status(400).send({ error: 'User not found' });
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(400).send({ error: 'Invalid password' });
+    } else {
+      jwt.sign(
+        { userId: user._id, username, userProfile: user.profilePicture },
+        process.env.TOKEN_SECRET,
+        (err, token) => {
+          if (err) return res.status(400).json(err);
+          res
+            .cookie('token', token, {
+              sameSite: 'none',
+              secure: true,
+            })
+            .status(201)
+            .json({
+              user: user,
+            });
+        }
+      );
+    }
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
+
 // delete user by id
 router.delete('/', async (req, res) => {
-  const { userId } = req.body;
   try {
-    await userModel.findByIdAndDelete({ _id: userId }, (err, result) => {
-      if (err) return res.status(400).json(err);
-      else return res.status(200).json(result);
-    });
+    await userModel.findByIdAndDelete(
+      { _id: req.body.userId },
+      (err, result) => {
+        if (err) return res.status(400).json(err);
+        else return res.status(200).json(result);
+      }
+    );
   } catch (error) {
     console.log(error);
   }
