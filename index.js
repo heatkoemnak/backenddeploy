@@ -4,15 +4,12 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const port = 3000;
+const userRoute = require('./routes/user.route');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-app.get('/users', (req, res) => {
-  res.send('Hello users');
-});
-// MONGO_URL = 'mongodb+srv://heatkimnak:EnITmN2hkFbRiTzy@cluster0.ffsxyzk.mongodb.net/mernchat?retryWrites=true&w=majority';
 const MongoDB_URL = process.env.MONGO_URL;
 mongoose
   .connect(MongoDB_URL)
@@ -26,3 +23,5 @@ mongoose
 app.listen(port, () => {
   console.log(`app listening at http://localhost:${port}`);
 });
+
+app.use('/api', userRoute);
