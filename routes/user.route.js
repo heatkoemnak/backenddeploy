@@ -60,7 +60,7 @@ router.post('/login', async (req, res) => {
   if (!username || !password)
     return res
       .status(400)
-      .send({ error: 'You must provide a username and password' });
+      .json({ error: 'You must provide a username and password' });
   try {
     const user = await userModel.findOne({ username });
     if (!user) return res.status(400).send({ error: 'User not found' });
@@ -91,25 +91,15 @@ router.post('/login', async (req, res) => {
 });
 
 // delete user by id
-router.delete('/', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    await userModel.findByIdAndDelete(
-      { _id: req.body.userId },
-      (err, result) => {
-        if (err) return res.status(400).json(err);
-        else return res.status(200).json(result);
-      }
-    );
+    await userModel.findByIdAndDelete({ _id: req.params.id }, (err, result) => {
+      if (err) return res.status(400).json(err);
+      else return res.status(200).json(result);
+    });
   } catch (error) {
     console.log(error);
   }
-  // try {
-  //   const user = await userModel.findByIdAndDelete(req.params.id);
-  //   if (user) return res.status(200).json({ message: 'User deleted' });
-  //   else return res.status(400).json({ message: 'User not found' });
-  // } catch (error) {
-  //   console.log(error);
-  // }
 });
 
 module.exports = router;

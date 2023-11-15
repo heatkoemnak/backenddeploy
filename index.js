@@ -2,10 +2,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const port = 3000;
 const userRoute = require('./routes/user.route');
-
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
