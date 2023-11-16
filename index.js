@@ -6,7 +6,8 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const port = 8000;
 const userRoute = require('./routes/user.route');
-const ConversationRoute = require('./routes/conversation.route');
+const messageRoute = require('./routes/message.route');
+const conversationRoute = require('./routes/conversation.route');
 
 app.use(cookieParser());
 app.use(express.json());
@@ -28,4 +29,5 @@ app.listen(port, () => {
 });
 
 app.use('/api', userRoute);
-app.use('/api', ConversationRoute);
+app.use('/api', messageRoute);
+app.use('/api', conversationRoute);
