@@ -1,5 +1,24 @@
 const router = require('express').Router();
 const Conversations = require('../models/conversation.model');
+router.post('/createCon', async (req, res) => {
+  const { senderId, receiverId } = req.body;
+  try {
+    const conversation = await Conversations.findOne({
+      members: { $all: [senderId, receiverId] },
+    });
+    if (conversation) {
+      return res.status(200).json(conversation);
+    } else {
+      const newCon = new Conversations({
+        members: [senderId, receiverId],
+      });
+      await newCon.save();
+    }
+    res.status(201).json(newCon);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
 router.get('/conversations', async (req, res) => {
   try {
     const conversations = await Conversations.find();
