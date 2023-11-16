@@ -26,5 +26,17 @@ router.get('/conversations/:userId', async (req, res) => {
     console.log(error);
   }
 });
+router.delete('/conversations/:id', async (req, res) => {
+  try {
+    const conversation = await Conversations.findByIdAndDelete(req.params.id);
+    if (!conversation) {
+      return res.status(404).json('No conversation found');
+    } else {
+      return res.status(200).json('Conversation deleted');
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 module.exports = router;
