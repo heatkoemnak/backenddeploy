@@ -12,4 +12,18 @@ router.get('/messages', async (req, res) => {
     console.log(error);
   }
 });
+router.get('/messages/:conversationId', async (req, res) => {
+    try {
+      const messages = await Messages.find({
+        conversationId: req.params.conversationId,
+      });
+      if (!messages) {
+        return res.status(404).json('No messages found');
+      } else {
+        return res.status(200).json(messages);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
 module.exports = router;
