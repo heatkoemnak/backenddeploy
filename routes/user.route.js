@@ -45,20 +45,20 @@ router.get('/profile', async (req, res) => {
         password: hashedPassword,
       });
       await user.save();
-      if (user) {
-        jwt.sign({ userId: user._id, username }, TOKEN_SECRET, (err, token) => {
-          if (err) return res.status(400).json(err);
-          res
-            .cookie('token', token, {
-              sameSite: 'none',
-              secure: true,
-            })
-            .status(201)
-            .json({
-              user: user,
-            });
-        });
-      }
+      // if (user) {
+      //   jwt.sign({ userId: user._id, username }, TOKEN_SECRET, (err, token) => {
+      //     if (err) return res.status(400).json(err);
+      //     res
+      //       .cookie('token', token, {
+      //         sameSite: 'none',
+      //         secure: true,
+      //       })
+      //       .status(201)
+      //       .json({
+      //         user: user,
+      //       });
+      //   });
+      // }
       res.status(201).json({ user: user });
     } catch (err) {
       res.status(400).json(err);
@@ -70,25 +70,31 @@ router.post('/login', async (req, res) => {
   if (!username || !password)
     return res
       .status(400)
-      .json({ error: 'You must provide a username and password' });
+      .send({ error: 'You must provide a username and password' });
   try {
-    const user = await userModel.findOne({ username });
+    const user = await User.findOne({ username });
     if (!user) return res.status(400).send({ error: 'User not found' });
     const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword)
+    if (!validPassword) {
       return res.status(400).send({ error: 'Invalid password' });
-    jwt.sign({ userId: user._id, username }, TOKEN_SECRET, (err, token) => {
-      if (err) return res.status(400).json(err);
-      res
-        .cookie('token', token, {
-          sameSite: 'none',
-          secure: true,
-        })
-        .status(201)
-        .json({
-          user: user,
-        });
-    });
+    } else {
+      jwt.sign(
+        { userId: user._id, username, userProfile: user.profilePicture },
+        TOKEN_SECRET,
+        (err, token) => {
+          if (err) return res.status(400).json(err);
+          res
+            .cookie('token', token, {
+              sameSite: 'none',
+              secure: true,
+            })
+            .status(201)
+            .json({
+              user: user,
+            });
+        }
+      );
+    }
   } catch (err) {
     res.status(400).json(err);
   }
