@@ -106,5 +106,8 @@ router.delete('/users/:id', async (req, res) => {
     console.log(error);
   }
 });
+router.post('/logout', async (req, res) => {
+  res.clearCookie('token').status(200).json({ message: 'Logged out' });
+});
 
 module.exports = router;
