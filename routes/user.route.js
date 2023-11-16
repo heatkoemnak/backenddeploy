@@ -116,16 +116,16 @@ router.delete('/users/:id', async (req, res) => {
     console.log(error);
   }
 });
-router.get('/logout', async (req, res) => {
-  res.cookie(
-    'token',
-    '',
-    {
+router.post('/logout', async (req, res) => {
+  res
+    .cookie('token', '', {
       sameSite: 'none',
       secure: true,
-    },
-    { maxAge: 1 }
-  );
+      expires: new Date(0),
+    })
+    .status(200)
+    .json({ message: 'Logged out' });
+  
 });
 
 module.exports = router;
