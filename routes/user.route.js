@@ -46,18 +46,22 @@ router.get('/profile', async (req, res) => {
       });
       await user.save();
       if (user) {
-        jwt.sign({ userId: user._id, username }, process.env.TOKEN_SECRET, (err, token) => {
-          if (err) return res.status(400).json(err);
-          res
-            .cookie('token', token, {
-              sameSite: 'none',
-              secure: true,
-            })
-            .status(201)
-            .json({
-              user: user,
-            });
-        });
+        jwt.sign(
+          { userId: user._id, username },
+          process.env.TOKEN_SECRET,
+          (err, token) => {
+            if (err) return res.status(400).json(err);
+            res
+              .cookie('token', token, {
+                sameSite: 'none',
+                secure: true,
+              })
+              .status(201)
+              .json({
+                user: user,
+              });
+          }
+        );
       }
       res.status(201).json({ user: user });
     } catch (err) {
