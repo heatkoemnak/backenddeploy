@@ -2,18 +2,56 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const cors = require('cors');
+const http = require('http');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const port = 8000;
 const userRoute = require('./routes/user.route');
 const messageRoute = require('./routes/message.route');
 const conversationRoute = require('./routes/conversation.route');
+const { Server } = require('socket.io');
 
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
-
+app.use(
+  cors({
+    origin: 'https://mernchat-emqm.vercel.app',
+    credentials: true,
+  })
+);
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: 'https://mernchat-emqm.vercel.app',
+    methods: ['GET', 'POST'],
+  },
+});
+let OnlineUser = [];
+const AddNewUser = (userId, socketId) => {
+  !OnlineUser.some((user) => user.userId == userId) &&
+    OnlineUser.push({ userId, socketId });
+  return OnlineUser;
+};
+const getUser = (userId) => {
+  return OnlineUser.find((u) => u.userId === userId);
+};
+io.on('connection', (socket) => {
+  console.log('a user connected');
+  socket.on('send_user', (user) => {
+    console.log(user);
+    const userList = AddNewUser(user, socket.id);
+    console.log(userList);
+  });
+  socket.on('send_message', (data) => {
+    const receiver = getUser(data?.receiverId);
+    console.log(receiver);
+    io.to(receiver?.socketId).emit('receive_message', data);
+  });
+  socket.on('disconnect', () => {
+    OnlineUser.find((onlineUser) => onlineUser.socketId !== socket.id);
+  });
+});
 const MongoDB_URL = process.env.MONGO_URL;
 mongoose
   .connect(MongoDB_URL)
