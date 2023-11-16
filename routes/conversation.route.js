@@ -12,4 +12,19 @@ router.get('/conversations', async (req, res) => {
     console.log(error);
   }
 });
+router.get('/conversations/:userId', async (req, res) => {
+  try {
+    const conversation = await Conversations.find({
+      members: { $in: [req.params.userId] },
+    });
+    if (!conversation) {
+      return res.status(404).json('No conversations found');
+    } else {
+      return res.status(200).json(conversation);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 module.exports = router;
