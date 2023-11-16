@@ -125,7 +125,6 @@ router.post('/logout', async (req, res) => {
     })
     .status(200)
     .json({ message: 'Logged out' });
-  
 });
 
 module.exports = router;
