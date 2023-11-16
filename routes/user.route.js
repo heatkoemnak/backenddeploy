@@ -76,7 +76,7 @@ router.post('/login', async (req, res) => {
       .status(400)
       .send({ error: 'You must provide a username and password' });
   try {
-    const user = await User.findOne({ username });
+    const user = await userModel.findOne({ username });
     if (!user) return res.status(400).send({ error: 'User not found' });
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
@@ -84,7 +84,7 @@ router.post('/login', async (req, res) => {
     } else {
       jwt.sign(
         { userId: user._id, username, userProfile: user.profilePicture },
-        TOKEN_SECRET,
+        process.env.TOKEN_SECRET,
         (err, token) => {
           if (err) return res.status(400).json(err);
           res
@@ -116,8 +116,16 @@ router.delete('/users/:id', async (req, res) => {
     console.log(error);
   }
 });
-router.post('/logout', async (req, res) => {
-  res.clearCookie('token').status(200).json({ message: 'Logged out' });
+router.get('/logout', async (req, res) => {
+  res.cookie(
+    'token',
+    '',
+    {
+      sameSite: 'none',
+      secure: true,
+    },
+    { maxAge: 1 }
+  );
 });
 
 module.exports = router;
