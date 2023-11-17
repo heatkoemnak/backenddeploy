@@ -50,8 +50,10 @@ router.get('/profile', async (req, res) => {
 
     try {
       const usernameExist = await userModel.findOne({ username });
+      console.log(usernameExist);
       if (usernameExist)
         return res.status(400).send({ error: 'Username already exists' });
+
       const user = new userModel({
         username: username,
         password: hashedPassword,
