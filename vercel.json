@@ -9,11 +9,15 @@
   ],
   "routes": [
     {
-      "src": "/",
+      "src": "/(.*)",
       "dest": "/"
     },
     {
       "src": "/api/users",
+      "dest": "/"
+    },
+    {
+      "src": "/api/profile",
       "dest": "/"
     }
   ]
