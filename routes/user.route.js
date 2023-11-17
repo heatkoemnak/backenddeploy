@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const router = require('express').Router();
 
-// const TOKEN_SECRET = 'jkmknsxanasasnklkmoasa';
 router.get('/users', async (req, res) => {
   try {
     const users = await userModel.find();
