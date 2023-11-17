@@ -27,12 +27,25 @@ router.get('/profile', async (req, res) => {
   }
 }),
   router.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, ConfirmPassword } = req.body;
 
-    if (!username || !password)
-      return res
-        .status(400)
-        .send({ error: 'You must provide a username and password' });
+    if (!username || !password) {
+      return res.status(400).send({
+        error: 'You must provide a username and password',
+      });
+    } else if (password !== ConfirmPassword) {
+      return res.status(400).send({
+        error:
+          'please fill  all the required fields and make sure passwords match',
+      });
+    } else {
+      if (password.length < 6) {
+        return res.status(400).send({
+          error: 'password must be at least 6 characters',
+        });
+      }
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
