@@ -35,8 +35,7 @@ router.get('/profile', async (req, res) => {
       });
     } else if (password !== ConfirmPassword) {
       return res.status(400).send({
-        error:
-          'please fill  all the required fields and make sure passwords match',
+        error: 'please make sure passwords match',
       });
     } else {
       if (password.length < 6) {
